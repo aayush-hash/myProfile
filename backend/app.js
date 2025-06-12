@@ -21,8 +21,8 @@ const app = express();
 app.use(
   cors({
     origin: [
-      process.env.PORTFOLIO_URL.trim(),
-      process.env.DASHBOARD_URL.trim(),
+      process.env.PORTFOLIO_URL?.trim(),
+      process.env.DASHBOARD_URL?.trim(),
       'https://aayoushzprofile.netlify.app',
       'https://aayoushzdashboard.netlify.app',
     ],

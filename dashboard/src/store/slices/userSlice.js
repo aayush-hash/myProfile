@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -12,7 +14,7 @@ const userSlice = createSlice({
     isUpdated: false,
   },
   reducers: {
-    loginRequest(state, action) {
+    loginRequest(state) {
       state.loading = true;
       state.isAuthenticated = false;
       state.user = {};
@@ -39,11 +41,9 @@ const userSlice = createSlice({
     },
     logoutFailed(state, action) {
       state.loading = false;
-      state.isAuthenticated = state.isAuthenticated;
-      state.user = state.user;
       state.error = action.payload;
     },
-    loadUserRequest(state, action) {
+    loadUserRequest(state) {
       state.loading = true;
       state.isAuthenticated = false;
       state.user = {};
@@ -61,7 +61,7 @@ const userSlice = createSlice({
       state.user = {};
       state.error = action.payload;
     },
-    updatePasswordRequest(state, action) {
+    updatePasswordRequest(state) {
       state.loading = true;
       state.isUpdated = false;
       state.message = null;
@@ -79,7 +79,7 @@ const userSlice = createSlice({
       state.message = null;
       state.error = action.payload;
     },
-    updateProfileRequest(state, action) {
+    updateProfileRequest(state) {
       state.loading = true;
       state.isUpdated = false;
       state.message = null;
@@ -97,14 +97,13 @@ const userSlice = createSlice({
       state.message = null;
       state.error = action.payload;
     },
-    updateProfileResetAfterUpdate(state, action) {
+    updateProfileResetAfterUpdate(state) {
       state.error = null;
       state.isUpdated = false;
       state.message = null;
     },
-    clearAllErrors(state, action) {
+    clearAllErrors(state) {
       state.error = null;
-      state = state.user;
     },
   },
 });
@@ -113,7 +112,7 @@ export const login = (email, password) => async (dispatch) => {
   dispatch(userSlice.actions.loginRequest());
   try {
     const { data } = await axios.post(
-      "https://myprofile-xxn1.onrender.com/api/v1/user/login",
+      `${BASE_URL}/api/v1/user/login`,
       { email, password },
       { withCredentials: true, headers: { "Content-Type": "application/json" } }
     );
@@ -128,10 +127,9 @@ export const login = (email, password) => async (dispatch) => {
 export const getUser = () => async (dispatch) => {
   dispatch(userSlice.actions.loadUserRequest());
   try {
-    const { data } = await axios.get(
-      "https://myprofile-xxn1.onrender.com/api/v1/user/me",
-      { withCredentials: true }
-    );
+    const { data } = await axios.get(`${BASE_URL}/api/v1/user/me`, {
+      withCredentials: true,
+    });
     dispatch(userSlice.actions.loadUserSuccess(data.user));
   } catch (error) {
     const message =
@@ -142,10 +140,9 @@ export const getUser = () => async (dispatch) => {
 
 export const logout = () => async (dispatch) => {
   try {
-    const { data } = await axios.get(
-      "https://myprofile-xxn1.onrender.com/api/v1/user/logout",
-      { withCredentials: true }
-    );
+    const { data } = await axios.get(`${BASE_URL}/api/v1/user/logout`, {
+      withCredentials: true,
+    });
     dispatch(userSlice.actions.logoutSuccess(data.message));
   } catch (error) {
     const message =
@@ -159,7 +156,7 @@ export const updatePassword =
     dispatch(userSlice.actions.updatePasswordRequest());
     try {
       const { data } = await axios.put(
-        "https://myprofile-xxn1.onrender.com/api/v1/user/update/password",
+        `${BASE_URL}/api/v1/user/update/password`,
         { currentPassword, newPassword, confirmNewPassword },
         {
           withCredentials: true,
@@ -170,33 +167,35 @@ export const updatePassword =
       dispatch(userSlice.actions.clearAllErrors());
     } catch (error) {
       dispatch(
-        userSlice.actions.updatePasswordFailed(error.response.data.message)
+        userSlice.actions.updatePasswordFailed(
+          error.response?.data?.message || "Update password failed"
+        )
       );
     }
   };
 
-export const updateProfile = (data) => async (dispatch) => {
+export const updateProfile = (formData) => async (dispatch) => {
   dispatch(userSlice.actions.updateProfileRequest());
   try {
-    const response = await axios.put(
-      "https://myprofile-xxn1.onrender.com/api/v1/user/update/me",
-      data,
-      {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
-      }
-    );
-    dispatch(userSlice.actions.updateProfileSuccess(response.data.message));
+    const { data } = await axios.put(`${BASE_URL}/api/v1/user/update/me`, formData, {
+      withCredentials: true,
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    dispatch(userSlice.actions.updateProfileSuccess(data.message));
     dispatch(userSlice.actions.clearAllErrors());
   } catch (error) {
     dispatch(
-      userSlice.actions.updateProfileFailed(error.response.data.message)
+      userSlice.actions.updateProfileFailed(
+        error.response?.data?.message || "Update profile failed"
+      )
     );
   }
 };
+
 export const resetProfile = () => (dispatch) => {
   dispatch(userSlice.actions.updateProfileResetAfterUpdate());
 };
+
 export const clearAllErrors = () => (dispatch) => {
   dispatch(userSlice.actions.clearAllErrors());
 };
