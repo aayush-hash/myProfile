@@ -23,7 +23,8 @@ app.use(
     origin: [
       process.env.PORTFOLIO_URL.trim(),
       process.env.DASHBOARD_URL.trim(),
-      'https://aayoushzdashboard.netlify.app/login', // Frontend development
+      'https://aayoushzprofile.netlify.app',
+      'https://aayoushzdashboard.netlify.app',
     ],
     methods: ['GET', 'POST', 'DELETE', 'PUT'],
     credentials: true, // Allow cookies
