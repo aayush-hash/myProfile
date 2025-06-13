@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import {
-    ExternalLink,
-    Facebook,
-    Github,
-    Instagram,
-    Linkedin,
-    Twitter,
-    Youtube,
+  ExternalLink,
+  Facebook,
+  Github,
+  Instagram,
+  Linkedin,
+  Youtube
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -60,9 +59,7 @@ const Hero = () => {
         <Link to={"https://www.linkedin.com/in/aayush-jung-kunwar-264b672a6/"} target="_blank">
           <Linkedin className="text-sky-500 w-7 h-7" />
         </Link>
-        <Link to={user.twitterURL} target="_blank">
-          <Twitter className="text-blue-800 w-7 h-7" />
-        </Link>
+        
       </div>
       <div className="mt-4 md:mt-8 lg:mt-10  flex gap-3">
         <Link to={"https://github.com/aayush-hash"} target="_blank">
